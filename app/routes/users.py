@@ -1,22 +1,17 @@
 from flask import Blueprint, request, jsonify
 
 from app import db
-from app.models import User
+from app.models.user import User
 
-hello_world_bp = Blueprint('hello', __name__)
 user_bp = Blueprint('user', __name__)
-
-
-@hello_world_bp.get('/')
-def hello_world():
-    return "<p> Hello, World!</p>"
 
 
 @user_bp.post('/')
 def user_create():
     data = request.get_json()
     user = User(
-        name=data['name']
+        name=data['name'],
+        age=data['age']
     )
     db.session.add(user)
     db.session.commit()
@@ -43,6 +38,22 @@ def user_update(id):
         return jsonify({'message': 'User not found'}), 404
 
     user.name = data.get('name', user.name)
+    user.age = data.get('age', user.age)
+
+    db.session.commit()
+    return jsonify(user.to_dict()), 200
+
+@user_bp.patch('/<int:id>')
+def user_patch(id):
+    data = request.get_json()
+    user = User.query.get(id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    allowed_fields = ['age']
+    for field in allowed_fields:
+        if field in data:
+            setattr(user, field, data[field])
 
     db.session.commit()
     return jsonify(user.to_dict()), 200
