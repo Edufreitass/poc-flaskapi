@@ -1,5 +1,5 @@
 from flask import Flask
-from .extensions import db, migrate
+from .extensions.extensions import db, migrate
 from .routes.users import user_bp
 
 
