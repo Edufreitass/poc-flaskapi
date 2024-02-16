@@ -1,6 +1,8 @@
 from flask import Flask
+
 from .extensions.extensions import db, migrate
 from .routes.users import user_bp
+from .routes.posts import post_bp
 
 
 def create_app():
@@ -12,5 +14,6 @@ def create_app():
     migrate.init_app(app, db)
 
     app.register_blueprint(user_bp, url_prefix='/users')
+    app.register_blueprint(post_bp, url_prefix='/posts')
 
     return app
